@@ -10,17 +10,20 @@ public class Player : MonoBehaviour
     private Vector3 pastPos;
     private float vx;
     private float vz;
-    
+    private int state;
     private void Start(){
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         pastPos = transform.position;
         vx = 0;
         vz = 0;
+        state = 0;
     }
 
     private void Update(){
-        Move();
+        if(state == 0){
+            Move();
+        }
     }
 
     private void Move(){
