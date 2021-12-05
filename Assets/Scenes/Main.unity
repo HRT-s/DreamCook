@@ -376,7 +376,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6535966611668304912, guid: d6112008cba14c147b799fa5f0944f3d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6535966611668304912, guid: d6112008cba14c147b799fa5f0944f3d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1189,7 +1189,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 785163645930859874, guid: 9fbb97aa4d365e147bb598f98126468b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.06
+      value: -3.052
       objectReference: {fileID: 0}
     - target: {fileID: 785163645930859874, guid: 9fbb97aa4d365e147bb598f98126468b, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1230,6 +1230,10 @@ PrefabInstance:
     - target: {fileID: 898645558566869671, guid: 9fbb97aa4d365e147bb598f98126468b, type: 3}
       propertyPath: m_Name
       value: Example Door 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5150226454893798534, guid: 9fbb97aa4d365e147bb598f98126468b, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5242403825288770457, guid: 9fbb97aa4d365e147bb598f98126468b, type: 3}
       propertyPath: m_Open
@@ -1737,8 +1741,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 25, y: 20, z: 25}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 21.256474, y: 14.452621, z: 25}
+  m_Center: {x: 1.8717674, y: -2.7736986, z: 3.515971e-15}
 --- !u!1 &1877577377
 GameObject:
   m_ObjectHideFlags: 0

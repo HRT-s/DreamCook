@@ -1,27 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] private float speed = 1f;
+    [SerializeField] private Camera myCamera;
     private Rigidbody rb;
     private Animator animator;
-    private Vector3 pastPos;
-    private float vx;
-    private float vz;
+    private GameManager gm;
+    private float vx,vz;
+    private Vector3 dir;
     private int state;
+
     private void Start(){
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-        pastPos = transform.position;
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         vx = 0;
         vz = 0;
+        dir = new Vector3(-10,0,transform.position.z);
         state = 0;
     }
 
     private void Update(){
-        if(state == 0){
+        state = gm.State;
+        if(state == 1){
             Move();
         }
     }
@@ -31,19 +36,24 @@ public class Player : MonoBehaviour
         vz = Input.GetAxis("Vertical");
         if (vx != 0 || vz != 0){
             animator.SetInteger("legs", 1);
-            animator.SetInteger("arms",1);
+            animator.SetInteger("arms", 1);
+            if(vz == 0){
+                dir.x = transform.position.x;
+            }else if(Math.Abs(vz) > 0.1){
+                dir.x = -1000*vz;
+            }
+            if(vx == 0){
+                dir.z = transform.position.z;
+            }else if(Math.Abs(vx) > 0.1){
+                dir.z = 1000*vx;
+            }
         }else{
             animator.SetInteger("legs", 0);
-            animator.SetInteger("arms",5);
+            animator.SetInteger("arms", 5);
         }
         rb.velocity = new Vector3(-vx * speed, 0, -vz * speed);
-        Vector3 diff = transform.position - pastPos;
-        float tmp = -diff.x;
-        diff.x = diff.z;
-        diff.z = tmp;
-        if(diff.magnitude > 0.025f){
-            transform.rotation = Quaternion.LookRotation(diff);
-        }
-        pastPos = transform.position;
+        transform.rotation = Quaternion.LookRotation(dir);
+        myCamera.transform.rotation = Quaternion.LookRotation(dir);
+        myCamera.transform.Rotate(new Vector3(30,-90,0));
     }
 }
