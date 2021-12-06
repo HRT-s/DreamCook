@@ -11,8 +11,17 @@ public class Player : MonoBehaviour
     private Animator animator;
     private GameManager gm;
     private float vx,vz;
+    private Transform initTransform;
     private Vector3 dir;
     private int state;
+    private List<string> recipe;
+    private List<GameObject> items;
+    public List<string> Recipe{get{return recipe;} set{recipe = value;}}
+
+    public void Reset(){
+        transform.position = initTransform.position;
+        transform.rotation = initTransform.rotation;
+    }
 
     private void Start(){
         rb = GetComponent<Rigidbody>();
@@ -20,8 +29,11 @@ public class Player : MonoBehaviour
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         vx = 0;
         vz = 0;
+        initTransform = transform;
         dir = new Vector3(-10,0,transform.position.z);
         state = 0;
+        recipe = new List<string>();
+        items = new List<GameObject>();
     }
 
     private void Update(){
@@ -55,5 +67,18 @@ public class Player : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(dir);
         myCamera.transform.rotation = Quaternion.LookRotation(dir);
         myCamera.transform.Rotate(new Vector3(30,-90,0));
+    }
+
+    private void OnTriggerStay(Collider other) {
+        if(other.gameObject.CompareTag("recipe") && Input.GetMouseButtonDown(0)){
+            gm.GetRecipe(other.gameObject.name);
+            Destroy(other.gameObject);
+        }
+    }
+
+    private void OnCollisionStay(Collision other) {
+        if(other.gameObject.CompareTag("bed") && Input.GetMouseButtonDown(0) && recipe.Count != 0){
+            gm.BedTouch();
+        }
     }
 }
