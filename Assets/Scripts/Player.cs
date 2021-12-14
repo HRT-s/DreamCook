@@ -14,13 +14,22 @@ public class Player : MonoBehaviour
     private Transform initTransform;
     private Vector3 dir;
     private int state;
-    private List<string> recipe;
+    private List<string> recipes;
     private List<GameObject> items;
-    public List<string> Recipe{get{return recipe;} set{recipe = value;}}
+    private Recipe selectedRecipe;
+    private bool isSleep;
+    private bool isMouseClicked;
+    public List<string> Recipes{get{return recipes;} set{recipes = value;}}
+    public List<GameObject> Items{get{return items;} set{items = value;}}
 
     public void Reset(){
         transform.position = initTransform.position;
         transform.rotation = initTransform.rotation;
+    }
+
+    public void SetRecipe(Recipe recipe){
+        selectedRecipe = recipe;
+        isSleep = true;
     }
 
     private void Start(){
@@ -32,8 +41,10 @@ public class Player : MonoBehaviour
         initTransform = transform;
         dir = new Vector3(-10,0,transform.position.z);
         state = 0;
-        recipe = new List<string>();
+        recipes = new List<string>();
         items = new List<GameObject>();
+        isSleep = false;
+        isMouseClicked = false;
     }
 
     private void Update(){
@@ -69,16 +80,35 @@ public class Player : MonoBehaviour
         myCamera.transform.Rotate(new Vector3(30,-90,0));
     }
 
-    private void OnTriggerStay(Collider other) {
-        if(other.gameObject.CompareTag("recipe") && Input.GetMouseButtonDown(0)){
-            gm.GetRecipe(other.gameObject.name);
-            Destroy(other.gameObject);
-        }
+    public void MouseClicked(){
+        isMouseClicked = true;
+    }
+
+    public void MouseReleased(){
+        isMouseClicked = false;
     }
 
     private void OnCollisionStay(Collision other) {
-        if(other.gameObject.CompareTag("bed") && Input.GetMouseButtonDown(0) && recipe.Count != 0){
-            gm.BedTouch();
+        if(isMouseClicked){
+            if(other.gameObject.CompareTag("bed") && !isSleep){
+                gm.BedTouch();
+            }
+            if(other.gameObject.CompareTag("recipe")){
+                gm.GetRecipe(other.gameObject.name);
+                Destroy(other.gameObject);
+            }
+            if(other.gameObject.CompareTag("refrigerator")){
+                if(selectedRecipe == null) return;
+                selectedRecipe.OpenRefrigerator();
+            }
+            if(other.gameObject.CompareTag("element")){
+                items.Add(other.gameObject);
+                other.transform.position = new Vector3(0,-20,0);
+                selectedRecipe.GetElements(other.gameObject);
+            }
+            if(other.gameObject.CompareTag("boul") && selectedRecipe != null){
+                selectedRecipe.CookToBoul();
+            }
         }
     }
 }

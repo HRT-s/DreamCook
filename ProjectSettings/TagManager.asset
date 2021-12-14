@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Interactable
   - recipe
+  - bed
+  - refrigerator
+  - element
+  - boul
   layers:
   - Default
   - TransparentFX

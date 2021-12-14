@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour{
         recipeTable = new Hashtable();
         recipeTable.Add("Fruits","フルーツ盛り合わせ");
         recipeTable.Add("Curry","カレーライス");
-        Invoke("WaitStart",3.0f);
+        Invoke("WaitStart",2.0f);
     }
 
     private void WaitStart(){
@@ -53,19 +53,14 @@ public class GameManager : MonoBehaviour{
         if(!isStart) return;
         if(state == 0){
             TypeWriter();
-            MouseClicked();
-        }else if(state == 2){
-            wait += Time.deltaTime;
-            if(wait > 1.0f && Input.GetMouseButtonDown(0)){
-                state = 1;
-                r_text.text = "";
-                ChangeCamera();
-                panel.SetActive(false);
-                navi.SetActive(true);
-                n_text.text = "Navi: おやすみなさい。";
-                wait = 0f;
-            }
         }
+        if(state == 2){
+            main.enabled = false;
+            playerCam.enabled = true;
+            panel.SetActive(true);
+            navi.SetActive(false);
+        }
+        MouseClicked();
     }
 
     private void TypeWriter(){
@@ -82,53 +77,83 @@ public class GameManager : MonoBehaviour{
 
     private void MouseClicked(){
         if(Input.GetMouseButtonDown(0)){
-            if(isWritten){
-                state = 1;
-                first.enabled = false;
-                main.enabled = true;
-                prologue.SetActive(false);
-                panel.SetActive(false);
-                navi.SetActive(true);
-            }else{
-                p_text.maxVisibleCharacters = p_text.text.Length;
+            player.MouseClicked();
+        }else if(Input.GetMouseButtonUp(0)){
+            player.MouseReleased();
+        }
+        if(Input.GetMouseButtonDown(1)){
+            if(state == 0){
+                SkipTypeWrite();
+            }else if(state == 2){
+                ChangeDisp();
+                recipeSelect.SetActive(false);
             }
         }
     }
 
-    public void ChangePanelDisp(){
-        panel.SetActive(!panel.activeSelf);
+    public void SkipTypeWrite(){
+        if(isWritten){
+            state = 1;
+            first.enabled = false;
+            main.enabled = true;
+            prologue.SetActive(false);
+            panel.SetActive(false);
+            navi.SetActive(true);
+        }else{
+            p_text.maxVisibleCharacters = p_text.text.Length;
+        }
+    }
+
+    public void ChangeDisp(){
+        state = 1;
+        r_text.text = "";
+        ChangeCamera();
+        if(player.Recipes.Count == 1){
+            n_text.text = "Navi: おやすみなさい。";
+        }
     }
 
     public void ChangeCamera(){
         main.enabled = !main.enabled;
         playerCam.enabled = !playerCam.enabled;
+        panel.SetActive(!panel.activeSelf);
+        navi.SetActive(!navi.activeSelf);
     }
 
     public void GetRecipe(string r_name){
         state = 2;
         ChangeCamera();
-        panel.SetActive(true);
-        navi.SetActive(false);
         r_text.text = "レシピ「"+recipeTable[r_name]+"」を手に入れた。";
-        List<string> recipe = player.Recipe;
+        List<string> recipe = player.Recipes;
         recipe.Add(recipeTable[r_name].ToString());
-        player.Recipe = recipe;
+        player.Recipes = recipe;
     }
 
     public void BedTouch(){
-        state = 3;
+        state = 2;
         ChangeCamera();
-        panel.SetActive(true);
-        navi.SetActive(false);
         recipeSelect.SetActive(true);
-        DispRecipeButton("カレーライス");
+        DispRecipeButton(recipeTable["Fruits"].ToString(),0);
+        DispRecipeButton(recipeTable["Curry"].ToString(),1);
     }
 
-    private void DispRecipeButton(string value){
-        if(player.Recipe.Contains(value)){
-            Button curryBtn = recipeSelect.GetComponentInChildren<Button>();
-            Text curryText = curryBtn.GetComponentInChildren<Text>();
-            curryText.text = value;
+    public void SetNavi(string text){
+        n_text.text = text;
+    }
+
+    public void SetR_text(string text){
+        r_text.text = text;
+    }
+
+    private void DispRecipeButton(string value,int index){
+        Button btn = recipeSelect.GetComponentsInChildren<Button>()[index];
+        Text text = btn.GetComponentInChildren<Text>();
+        if(player.Recipes.Contains(value)){
+            text.text = value;
+            btn.interactable = true;
+        }else{
+            text.text = "???";
+            btn.interactable = false;
         }
     }
 
@@ -136,7 +161,7 @@ public class GameManager : MonoBehaviour{
         houseLight.intensity = 0.3f;
         player.Reset();
         ChangeCamera();
-        panel.SetActive(false);
+        n_text.text = "Navi:材料を集めよう。";
         recipeSelect.SetActive(false);
         state = 1;
     }
